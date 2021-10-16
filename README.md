@@ -1,33 +1,41 @@
 # Simplexity Board Game
 
-## 📖  How to Run
+## 📖 How to Run
 
-1. Install virtualenv if you haven't
+1. Install pipenv if you haven't
+
 ```
-pip install virtualenv
-```
-2. Create virtualenv
-```
-virtualenv venv
+pip install pipenv
 ```
 
-3. Activate the created virtualenv
+2. Create and Install pipenv
+
 ```
-venv\Scripts\activate
+python -m pipenv install
 ```
 
-4. Install dependencies
+3. Activate the created pipenv
+
 ```
-pip install -r requirements.txt
+python -m pipenv shell
 ```
 
-5. Run
+4. Run inside created pipenv
+
 ```
 run.bat
 ```
 
+To install other dependencies:
+
+```
+python -m pipenv run pip install A B C
+```
+
 ## ⚙️ Config
+
 You can change the config in run.bat
+
 ```
  --row <int>
  --column <int>
@@ -40,4 +48,5 @@ You can change the config in run.bat
 ```
 
 ## ✔️ Acknowledgement
+
 This project is used for an assignment from IF3170 Artificial Intelligence 2021/2022

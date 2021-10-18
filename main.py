@@ -7,7 +7,8 @@ from src.mechanic import Game
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-r", "--row", required=True, help="num row board")
-    parser.add_argument("-c", "--column", required=True, help="num column board")
+    parser.add_argument("-c", "--column", required=True,
+                        help="num column board")
     parser.add_argument(
         "-t",
         "--type",
@@ -30,8 +31,10 @@ if __name__ == "__main__":
         required=False,
         help="max bot for thinking",
     )
-    parser.add_argument("-b1", "--bot1", required=False, help="filename for bot 1 for pvb or bvb player 1")
-    parser.add_argument("-b2", "--bot2", required=False, help="filename for bot 2 for bvb player 2")
+    parser.add_argument("-b1", "--bot1", required=False,
+                        help="filename for bot 1 for pvb or bvb player 1")
+    parser.add_argument("-b2", "--bot2", required=False,
+                        help="filename for bot 2 for bvb player 2")
 
     args = parser.parse_args()
 
@@ -59,7 +62,6 @@ if __name__ == "__main__":
         if player_choice < 0 or player_choice > 1:
             raise Exception("Please Input 0 or 1 for --player_choice")
         Path.PVB = Path.PVB.format(bot_path)
-        
 
     elif raw_type == "pvp":
         type = GameConstant.PVP

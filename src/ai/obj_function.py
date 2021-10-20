@@ -1,20 +1,13 @@
-from typing import Tuple
-
-from src.model import Piece, Board, State, Player
+from src.model import Board, Player
 from src.constant import ShapeConstant, GameConstant
 from src.utility import is_out
 
 
 # Pemetaan streak: poin
-POINT_MAPPING = {
-    1: 0,
-    2: 2,
-    3: 6,
-    4: 500
-}
+POINT_MAPPING = {1: 0, 2: 2, 3: 6, 4: 500}
 
 
-def count_streak_point(board: Board, row: int, col: int, player: Player) -> int:
+def count_streak_point(board: Board, row: int, col: int, player: Player):
     # Fungsi untuk menghitung jumlah poin semua streak yang mungkin dari bidak
     # pada posisi row, col pada arah kiri atas(1,-1), atas(1,0), kanan atas(1,1), dan kanan(0,1)
     piece = board[row, col]
@@ -32,9 +25,9 @@ def count_streak_point(board: Board, row: int, col: int, player: Player) -> int:
     # Cek berdasarkan color atau shape
     for prior in GameConstant.WIN_PRIOR:
         value = 0
-        if (prior == "SHAPE" and piece.shape != player.shape):
+        if prior == "SHAPE" and piece.shape != player.shape:
             continue
-        if (prior == "COLOR" and piece.color != player.color):
+        if prior == "COLOR" and piece.color != player.color:
             continue
         for row_ax, col_ax in main_streak_way:
             # streak : total streak skrg
@@ -70,7 +63,7 @@ def count_streak_point(board: Board, row: int, col: int, player: Player) -> int:
                         col_2 = col + col_ax2
 
                         # Pengecekan apakah pada arah berlawanan di luar board atau tidak terdapat bidak pada arah berlawanan
-                        if not(is_out(board, row_2, col_2)):
+                        if not (is_out(board, row_2, col_2)):
                             # Bidak pada arah berlawanan
                             piece_opp_direction = board[row_2, col_2]
                             if piece_opp_direction.shape != ShapeConstant.BLANK:
@@ -104,8 +97,8 @@ def count_streak_point(board: Board, row: int, col: int, player: Player) -> int:
 # a = obj_function(state, player1)
 # b = obj_function(state, player2)
 # obj_value = a - b
-def obj_function(board: Board, player: Player) -> int:
-    column_candidate = list(range(7))
+def obj_function(board: Board, player: Player):
+    column_candidate = list(range(board.col))
     row = 5
     obj_value = 0
     while row >= 0:

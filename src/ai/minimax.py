@@ -1,13 +1,10 @@
-import random
-import copy
 from time import time
 
-from src.constant import ShapeConstant, ColorConstant
-from src.model import State, Board, Piece, Player
+from src.model import State, Board
 from src.utility import is_win, is_full
 from src.ai.obj_function import obj_function
-
-from typing import Tuple, List
+from src.ai.gen_neigh import generate_neighbors
+from typing import Tuple
 
 
 class Minimax:
@@ -19,34 +16,22 @@ class Minimax:
     def is_leaf_node(self, depth: int, board: Board):
         return depth >= self.MAX_DEPTH or is_win(board) or is_full(board)
 
-    def generate_neighbors(self, board: Board, player: Player) -> List[Tuple[Board, str, str]]:
-        col = board.col
-        row = board.row
-        ans = list()
-        for i in range(col):
-            for j in range(row - 1, -1, -1):
-                if board[j, i].shape == ShapeConstant.BLANK:
-                    if player.quota[ShapeConstant.CIRCLE] > 0:
-                        newBoard = copy.deepcopy(board)
-                        newBoard.set_piece(j, i, Piece(
-                            ShapeConstant.CIRCLE, player.color))
-                        ans.append([newBoard, i, ShapeConstant.CIRCLE])
-                    if player.quota[ShapeConstant.CROSS] > 0:
-                        newBoard = copy.deepcopy(board)
-                        newBoard.set_piece(j, i, Piece(
-                            ShapeConstant.CROSS, player.color))
-                        ans.append([newBoard, i, ShapeConstant.CROSS])
-                    break
-        return ans
-
-    def minimax(self, board: Board, depth: int, isMaximizing: bool, alpha: float, beta: float, prevMove: Tuple[str, str]) -> Tuple[float, str, str]:
+    def minimax(
+        self,
+        board: Board,
+        depth: int,
+        isMaximizing: bool,
+        alpha: float,
+        beta: float,
+        prevMove: Tuple[str, str],
+    ) -> Tuple[float, str, str]:
         current_turn = (self.turn + depth) % 2
         player = self.state.players[current_turn]
         if self.is_leaf_node(depth, board):
             stateValue = obj_function(board, player)
             prevCol, prevShape = prevMove
             return [stateValue, prevCol, prevShape]
-        neighbors = self.generate_neighbors(board, player)
+        neighbors = generate_neighbors(board, player)
 
         if isMaximizing:
             maxVal = float("-inf")
@@ -54,7 +39,8 @@ class Minimax:
             maxShape = None
             for board, colMove, shapeMove in neighbors:
                 value, col, shape = self.minimax(
-                    board, depth + 1, False, alpha, beta, [colMove, shapeMove])
+                    board, depth + 1, False, alpha, beta, [colMove, shapeMove]
+                )
                 if value > maxVal:
                     maxVal = value
                     maxCol = col
@@ -69,7 +55,8 @@ class Minimax:
             minShape = None
             for board, colMove, shapeMove in neighbors:
                 value, col, shape = self.minimax(
-                    board, depth + 1, True, alpha, beta, [colMove, shapeMove])
+                    board, depth + 1, True, alpha, beta, [colMove, shapeMove]
+                )
                 if value < minVal:
                     minVal = value
                     minCol = col
@@ -79,7 +66,7 @@ class Minimax:
                     break
             return [minVal, minCol, minShape]
 
-    def find(self, state: State, player_turn: int, thinking_time: float) -> Tuple[str, str]:
+    def find(self, state: State, player_turn: int, thinking_time: float):
         self.thinking_time = time() + thinking_time
         maximizing_player_turn = player_turn
         minimizing_player_turn = (player_turn + 1) % 2

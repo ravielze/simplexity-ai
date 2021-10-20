@@ -1,4 +1,5 @@
 from time import time
+from src.constant import ShapeConstant
 
 from src.model import State, Board
 from src.utility import is_win, is_full
@@ -16,23 +17,29 @@ class Minimax:
     def is_leaf_node(self, depth: int, board: Board):
         return depth >= self.MAX_DEPTH or is_win(board) or is_full(board)
 
-    def minimax(self, board: Board, depth: int, isMaximizing: bool, alpha: float, beta: float) -> Tuple[int, str, str]:
+    def minimax(self, board: Board, depth: int, isMaximizing: bool, alpha: float, beta: float, circleUsed: int, crossUsed: int) -> Tuple[int, str, str]:
         if self.is_leaf_node(depth, board):
             playerValue = int(obj_function(board, self.player))
             enemyValue = int(obj_function(board, self.enemy))
             value = int(playerValue - enemyValue)
             return [value, "", ""]
         if depth % 2 == 1:
-            neighbors = self.generate_neighbors(board, self.enemy)
+            neighbors = generate_neighbors(board, self.enemy, circleUsed, crossUsed)
         else:
-            neighbors = self.generate_neighbors(board, self.player)
+            neighbors = generate_neighbors(board, self.player, circleUsed, crossUsed)
 
         if isMaximizing:
             maxVal = float("-inf")
             maxCol = None
             maxShape = None
             for board, colMove, shapeMove in neighbors:
-                value, _, _ = self.minimax(board, depth + 1, False, alpha, beta)
+                ci = circleUsed
+                cr = crossUsed
+                if shapeMove == ShapeConstant.CIRCLE:
+                    ci += 1
+                elif shapeMove == ShapeConstant.CROSS:
+                    cr += 1
+                value, _, _ = self.minimax(board, depth + 1, False, alpha, beta, ci, cr)
                 if value > maxVal:
                     maxVal = value
                     maxCol = colMove
@@ -46,7 +53,13 @@ class Minimax:
             minCol = None
             minShape = None
             for board, colMove, shapeMove in neighbors:
-                value, _, _ = self.minimax(board, depth + 1, True, alpha, beta)
+                ci = circleUsed
+                cr = crossUsed
+                if shapeMove == ShapeConstant.CIRCLE:
+                    ci += 1
+                elif shapeMove == ShapeConstant.CROSS:
+                    cr += 1
+                value, _, _ = self.minimax(board, depth + 1, True, alpha, beta, ci, cr)
                 if value < minVal:
                     minVal = value
                     minCol = colMove
@@ -64,6 +77,6 @@ class Minimax:
         self.state = state
         alpha = float("-inf")
         beta = float("+inf")
-        _, col, shape = self.minimax(state.board, 0, True, alpha, beta)
+        _, col, shape = self.minimax(state.board, 0, True, alpha, beta, 0, 0)
 
         return [col, shape]

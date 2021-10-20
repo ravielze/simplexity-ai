@@ -104,14 +104,14 @@ def count_streak_point(board: Board, row: int, col: int, player: Player) -> int:
 # a = obj_function(state, player1)
 # b = obj_function(state, player2)
 # obj_value = a - b
-def obj_function(state: State, player: Player) -> int:
+def obj_function(board: Board, player: Player) -> int:
     column_candidate = list(range(7))
     row = 5
     obj_value = 0
     while row >= 0:
         column_candidate_duplicate = column_candidate.copy()
         for col in column_candidate:
-            streak_points = count_streak_point(state.board, row, col, player)
+            streak_points = count_streak_point(board, row, col, player)
 
             # Kasus jika pada row, col tidak terdapat piece (bidak)
             if streak_points == -1:

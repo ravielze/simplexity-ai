@@ -5,15 +5,13 @@ from time import time
 from src.constant import ShapeConstant, ColorConstant
 from src.model import State, Board, Piece, Player
 from src.utility import is_win, is_full
+from src.ai.obj_function import obj_function
 
 from typing import Tuple, List
 
-def objective_function(board: Board, player: Player) -> float:
-    val = random.uniform(-100.0, 100.0)
-    return val
 
 class Minimax:
-    MAX_DEPTH = 1
+    MAX_DEPTH = 3
     def __init__(self):
         pass
     def is_leaf_node(self, depth: int, board: Board):
@@ -37,13 +35,12 @@ class Minimax:
         return ans
 
     def minimax(self, board: Board, depth: int, isMaximizing: bool, alpha: float, beta: float, prevMove: Tuple[str, str]) -> Tuple[float, str, str]:
-        current_turn = (self.turn + depth) % 2
-        player = self.state.players[current_turn]
         if self.is_leaf_node(depth, board):
-            stateValue = objective_function(board, player)
+            playerValue = obj_function(board, self.player)
+            enemyValue = obj_function(board, self.enemy)
             prevCol, prevShape = prevMove
-            return [stateValue, prevCol, prevShape]
-        neighbors = self.generate_neighbors(board, player)
+            return [playerValue - enemyValue, prevCol, prevShape]
+        neighbors = self.generate_neighbors(board, self.player)
 
         if isMaximizing:
             maxVal = float("-inf")
@@ -76,13 +73,9 @@ class Minimax:
 
     def find(self, state: State, player_turn: int, thinking_time: float) -> Tuple[str, str]:
         self.thinking_time = time() + thinking_time
-        maximizing_player_turn = player_turn
-        minimizing_player_turn = (player_turn + 1) % 2
-        self.turn = maximizing_player_turn
-        self.maximizing_color = state.players[maximizing_player_turn].color
-        self.maximizing_shape = state.players[maximizing_player_turn].shape
-        self.maximizing_color = state.players[minimizing_player_turn].color
-        self.maximizing_shape = state.players[minimizing_player_turn].shape
+        enemyTurn = (player_turn + 1) % 2
+        self.player = state.players[player_turn]
+        self.enemy = state.players[enemyTurn]
         self.state = state
         alpha = float("-inf")
         beta = float("+inf")

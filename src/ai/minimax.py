@@ -5,20 +5,21 @@ from time import time
 from src.constant import ShapeConstant, ColorConstant
 from src.model import State, Board, Piece, Player
 from src.utility import is_win, is_full
+from src.ai.obj_function import obj_function
 
 from typing import Tuple, List
 
-def objective_function(board: Board, player: Player) -> float:
-    val = random.uniform(-100.0, 100.0)
-    return val
 
 class Minimax:
     MAX_DEPTH = 1
+
     def __init__(self):
         pass
+
     def is_leaf_node(self, depth: int, board: Board):
         return depth >= self.MAX_DEPTH or is_win(board) or is_full(board)
-    def generate_neighbors(self, board: Board, player: Player) -> list[Tuple[Board, str, str]]:
+
+    def generate_neighbors(self, board: Board, player: Player) -> List[Tuple[Board, str, str]]:
         col = board.col
         row = board.row
         ans = list()
@@ -27,11 +28,13 @@ class Minimax:
                 if board[j, i].shape == ShapeConstant.BLANK:
                     if player.quota[ShapeConstant.CIRCLE] > 0:
                         newBoard = copy.deepcopy(board)
-                        newBoard.set_piece(j, i, Piece(ShapeConstant.CIRCLE, player.color))
+                        newBoard.set_piece(j, i, Piece(
+                            ShapeConstant.CIRCLE, player.color))
                         ans.append([newBoard, i, ShapeConstant.CIRCLE])
                     if player.quota[ShapeConstant.CROSS] > 0:
                         newBoard = copy.deepcopy(board)
-                        newBoard.set_piece(j, i, Piece(ShapeConstant.CROSS, player.color))
+                        newBoard.set_piece(j, i, Piece(
+                            ShapeConstant.CROSS, player.color))
                         ans.append([newBoard, i, ShapeConstant.CROSS])
                     break
         return ans
@@ -40,7 +43,7 @@ class Minimax:
         current_turn = (self.turn + depth) % 2
         player = self.state.players[current_turn]
         if self.is_leaf_node(depth, board):
-            stateValue = objective_function(board, player)
+            stateValue = obj_function(board, player)
             prevCol, prevShape = prevMove
             return [stateValue, prevCol, prevShape]
         neighbors = self.generate_neighbors(board, player)
@@ -50,7 +53,8 @@ class Minimax:
             maxCol = None
             maxShape = None
             for board, colMove, shapeMove in neighbors:
-                value, col, shape = self.minimax(board, depth + 1, False, alpha, beta, [colMove, shapeMove])
+                value, col, shape = self.minimax(
+                    board, depth + 1, False, alpha, beta, [colMove, shapeMove])
                 if value > maxVal:
                     maxVal = value
                     maxCol = col
@@ -64,7 +68,8 @@ class Minimax:
             minCol = None
             minShape = None
             for board, colMove, shapeMove in neighbors:
-                value, col, shape = self.minimax(board, depth + 1, True, alpha, beta, [colMove, shapeMove])
+                value, col, shape = self.minimax(
+                    board, depth + 1, True, alpha, beta, [colMove, shapeMove])
                 if value < minVal:
                     minVal = value
                     minCol = col
@@ -89,4 +94,3 @@ class Minimax:
         _, col, shape = self.minimax(state.board, 0, True, alpha, beta, [])
 
         return [col, shape]
-

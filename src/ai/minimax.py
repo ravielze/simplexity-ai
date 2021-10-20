@@ -18,6 +18,12 @@ class Minimax:
         return depth >= self.MAX_DEPTH or is_win(board) or is_full(board)
 
     def minimax(self, board: Board, depth: int, isMaximizing: bool, alpha: float, beta: float, circleUsed: int, crossUsed: int) -> Tuple[int, str, str]:
+        if is_win(board) != None:
+            winningShape, _ = is_win(board)
+            if winningShape == self.player.shape:
+                return [500, "", ""]
+            else:
+                return [-500, "", ""]
         if self.is_leaf_node(depth, board):
             playerValue = int(obj_function(board, self.player))
             enemyValue = int(obj_function(board, self.enemy))

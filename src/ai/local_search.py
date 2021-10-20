@@ -15,7 +15,7 @@ class LocalSearch:
 
     def localSearch(self, board: Board, player: Player, isEnemy: bool, enemy: Player):
         neighbors = generate_neighbors(board, player)
-        # random.shuffle(neighbors)
+        random.shuffle(neighbors)
 
         maxVal = float("-inf")
         maxCol = None

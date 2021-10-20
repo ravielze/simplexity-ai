@@ -17,7 +17,8 @@ class Board:
         self.row = row
         self.col = col
         self.board = [
-            [Piece(ShapeConstant.BLANK, ColorConstant.BLACK) for i in range(self.col)]
+            [Piece(ShapeConstant.BLANK, ColorConstant.BLACK)
+             for i in range(self.col)]
             for j in range(self.row)
         ]
 
@@ -66,8 +67,3 @@ class Board:
 
     def set_piece(self, row: int, col: int, piece: Piece):
         self.board[row][col] = piece
-
-    def copy(self):
-        copied = Board(self.row, self.col)
-        copied.board = [[Piece(self.board[j][i].shape, self.board[j][i].color) for i in range(self.col)] for j in range (self.row)]
-        return copied

@@ -11,7 +11,7 @@ from typing import Tuple, List
 
 
 class Minimax:
-    MAX_DEPTH = 3
+    MAX_DEPTH = 4
     def __init__(self):
         pass
     def is_leaf_node(self, depth: int, board: Board):
@@ -34,24 +34,27 @@ class Minimax:
                     break
         return ans
 
-    def minimax(self, board: Board, depth: int, isMaximizing: bool, alpha: float, beta: float, prevMove: Tuple[str, str]) -> Tuple[float, str, str]:
+    def minimax(self, board: Board, depth: int, isMaximizing: bool, alpha: float, beta: float) -> Tuple[int, str, str]:
         if self.is_leaf_node(depth, board):
-            playerValue = obj_function(board, self.player)
-            enemyValue = obj_function(board, self.enemy)
-            prevCol, prevShape = prevMove
-            return [playerValue - enemyValue, prevCol, prevShape]
-        neighbors = self.generate_neighbors(board, self.player)
+            playerValue = int(obj_function(board, self.player))
+            enemyValue = int(obj_function(board, self.enemy))
+            value = int(playerValue - enemyValue)
+            return [value, "", ""]
+        if depth % 2 == 1:
+            neighbors = self.generate_neighbors(board, self.enemy)
+        else:
+            neighbors = self.generate_neighbors(board, self.player)
 
         if isMaximizing:
             maxVal = float("-inf")
             maxCol = None
             maxShape = None
             for board, colMove, shapeMove in neighbors:
-                value, col, shape = self.minimax(board, depth + 1, False, alpha, beta, [colMove, shapeMove])
+                value, _, _ = self.minimax(board, depth + 1, False, alpha, beta)
                 if value > maxVal:
                     maxVal = value
-                    maxCol = col
-                    maxShape = shape
+                    maxCol = colMove
+                    maxShape = shapeMove
                 alpha = max(alpha, maxVal)
                 if beta <= alpha:
                     break
@@ -61,11 +64,11 @@ class Minimax:
             minCol = None
             minShape = None
             for board, colMove, shapeMove in neighbors:
-                value, col, shape = self.minimax(board, depth + 1, True, alpha, beta, [colMove, shapeMove])
+                value, _, _ = self.minimax(board, depth + 1, True, alpha, beta)
                 if value < minVal:
                     minVal = value
-                    minCol = col
-                    minShape = shape
+                    minCol = colMove
+                    minShape = shapeMove
                 beta = min(beta, minVal)
                 if beta <= alpha:
                     break
@@ -79,7 +82,7 @@ class Minimax:
         self.state = state
         alpha = float("-inf")
         beta = float("+inf")
-        _, col, shape = self.minimax(state.board, 0, True, alpha, beta, [])
+        _, col, shape = self.minimax(state.board, 0, True, alpha, beta)
 
         return [col, shape]
 
